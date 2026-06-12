@@ -9,3 +9,5 @@
 /home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/refint/Domain.dll
 /home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.pdb
 /home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/ref/Domain.dll
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.csproj.AssemblyReference.cache
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.sourcelink.json

@@ -17,3 +17,4 @@
 /home/mateusz/projects/esp_home/Services/obj/Debug/net10.0/refint/Services.dll
 /home/mateusz/projects/esp_home/Services/obj/Debug/net10.0/Services.pdb
 /home/mateusz/projects/esp_home/Services/obj/Debug/net10.0/ref/Services.dll
+/home/mateusz/projects/esp_home/Services/obj/Debug/net10.0/Services.sourcelink.json

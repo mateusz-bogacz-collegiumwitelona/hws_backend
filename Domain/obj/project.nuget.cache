@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "Q7/pS/XmVDw=",
+  "dgSpecHash": "1Sjjxk/S/Tk=",
   "success": true,
   "projectFilePath": "/home/mateusz/projects/esp_home/Domain/Domain.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/home/mateusz/.nuget/packages/nettopologysuite/2.6.0/nettopologysuite.2.6.0.nupkg.sha512"
+  ],
   "logs": []
 }
