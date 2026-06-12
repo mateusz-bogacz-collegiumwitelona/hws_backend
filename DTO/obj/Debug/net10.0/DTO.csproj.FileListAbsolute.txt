@@ -1,0 +1,11 @@
+/home/mateusz/projects/esp_home/DTO/bin/Debug/net10.0/DTO.deps.json
+/home/mateusz/projects/esp_home/DTO/bin/Debug/net10.0/DTO.dll
+/home/mateusz/projects/esp_home/DTO/bin/Debug/net10.0/DTO.pdb
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.GeneratedMSBuildEditorConfig.editorconfig
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.AssemblyInfoInputs.cache
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.AssemblyInfo.cs
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.csproj.CoreCompileInputs.cache
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.dll
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/refint/DTO.dll
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.pdb
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/ref/DTO.dll

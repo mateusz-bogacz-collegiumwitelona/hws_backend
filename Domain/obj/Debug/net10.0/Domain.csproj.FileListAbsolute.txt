@@ -1,0 +1,11 @@
+/home/mateusz/projects/esp_home/Domain/bin/Debug/net10.0/Domain.deps.json
+/home/mateusz/projects/esp_home/Domain/bin/Debug/net10.0/Domain.dll
+/home/mateusz/projects/esp_home/Domain/bin/Debug/net10.0/Domain.pdb
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.AssemblyInfoInputs.cache
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.AssemblyInfo.cs
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.csproj.CoreCompileInputs.cache
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.dll
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/refint/Domain.dll
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/Domain.pdb
+/home/mateusz/projects/esp_home/Domain/obj/Debug/net10.0/ref/Domain.dll
