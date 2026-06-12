@@ -6,7 +6,7 @@ volumes:
   db-data: { }
   redis-data: { }
   minio-data: { }
-
+  
 services:
   api:
     image: api
@@ -20,12 +20,19 @@ services:
       - JWT__KEY=${ASPNETCORE_JWT_KEY}
       - JWT__ISSUER=${ASPNETCORE_JWT_ISSUER}
       - JWT__AUDIENCE=${ASPNETCORE_JWT_AUDIENCE}
+      - MQTT__HOST=${MQTT_HOST}
+      - MQTT__PORT=${MQTT_PORT}
+      - MQTT__USER=${MQTT_USER}
+      - MQTT__PASSWORD=${MQTT_PASSWORD}
     ports:
       - "${ASPNETCORE_PORT:-8080}:8080"
     networks:
       - dev 
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      eclipse-mosquitto:
+        condition: service_started
     
   postgres:
     image: postgres:18-alpine
@@ -53,3 +60,17 @@ services:
     networks:
       - dev
     restart: unless-stopped
+  
+  eclipse-mosquitto: 
+    image: eclipse-mosquitto:alpine
+    container_name: eclipse-mosquitto
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
+      - "${MQTT_WS_PORT:-9001}:9001"
+    volumes:
+      - ./mqtt5/config:/mosquitto/config:rw
+      - ./mqtt5/data:/mosquitto/data:rw
+      - ./mqtt5/log:/mosquitto/log:rw
+    restart: unless-stopped
+    networks:
+      - dev

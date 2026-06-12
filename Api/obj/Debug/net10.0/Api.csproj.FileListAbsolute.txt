@@ -39,3 +39,4 @@
 /home/mateusz/projects/esp_home/Api/obj/Debug/net10.0/Api.pdb
 /home/mateusz/projects/esp_home/Api/obj/Debug/net10.0/Api.genruntimeconfig.cache
 /home/mateusz/projects/esp_home/Api/obj/Debug/net10.0/ref/Api.dll
+/home/mateusz/projects/esp_home/Api/obj/Debug/net10.0/Api.sourcelink.json

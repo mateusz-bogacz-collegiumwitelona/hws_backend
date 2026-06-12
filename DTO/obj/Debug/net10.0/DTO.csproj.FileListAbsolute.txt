@@ -9,3 +9,4 @@
 /home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/refint/DTO.dll
 /home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.pdb
 /home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/ref/DTO.dll
+/home/mateusz/projects/esp_home/DTO/obj/Debug/net10.0/DTO.sourcelink.json
