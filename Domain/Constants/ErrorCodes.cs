@@ -6,6 +6,8 @@ public static class ErrorCodes
     public const string InternalError = "INTERNAL_ERROR";
     public const string BadRequest = "BAD_REQUEST";
     public const string NotFound = "NOT_FOUND";
+    public const string InvalidCredentials = "AUTH_003";
+    public const string UnauthorizedAccess = "UNAUTHORIZED_ACCESS";
     
     // sensors
     public const string SensorNotFound = "SENSOR_01";

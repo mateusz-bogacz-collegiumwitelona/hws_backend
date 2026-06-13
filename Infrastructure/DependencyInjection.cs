@@ -1,3 +1,5 @@
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,10 @@ public static class DependencyInjection
         {
             options.UseNpgsql(dataSource);
         });
+        
+        services.AddIdentity<User, IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
         
         return services;
     }

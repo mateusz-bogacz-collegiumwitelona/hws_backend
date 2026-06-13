@@ -20,7 +20,7 @@ public class SensorServices : ISensorServices
         _context = context;
     }
 
-    public async Task<Result<GetSensorMesurmentResponse>> GetSensorNewestMesureAsync(Guid sensorId)
+    public async Task<Result<GetSensorMesurmentResponse>> GetSensorNewestMesureAsync(Guid sensorId, Guid userId)
     {
         try
         {
@@ -33,7 +33,9 @@ public class SensorServices : ISensorServices
 
             var latestMesurments = await _context.Measurements
                 .AsNoTracking()
+                .Include(m => m.Sensor)
                 .Where(m => m.SensorId == sensorId)
+                .Where(m => m.Sensor.UserId ==  userId)
                 .OrderByDescending(m => m.Timestamp)
                 .Select(m => new GetSensorMesurmentResponse
                 {
@@ -56,7 +58,7 @@ public class SensorServices : ISensorServices
             return Result<GetSensorMesurmentResponse>.Success(
                 data: latestMesurments,
                 message: "Sensor data found",
-                statusCode: StatusCodes.Status201Created
+                statusCode: StatusCodes.Status200OK
             );
         }
         catch (Exception ex)
@@ -70,7 +72,7 @@ public class SensorServices : ISensorServices
         }
     }
 
-    public async Task<Result> AddNewSenorAsync(AddNewSensorRequest request)
+    public async Task<Result> AddNewSenorAsync(AddNewSensorRequest request, Guid userId)
     {
         try
         {
@@ -90,6 +92,7 @@ public class SensorServices : ISensorServices
                 Location = request.Location,
                 Topic =  GetTopic(GetType(request.Type), request.MacAddress),
                 MacAddress = request.MacAddress,
+                UserId = userId
             };
             
             _context.Sensors.Add(sensor);
@@ -112,11 +115,11 @@ public class SensorServices : ISensorServices
         }
     }
 
-    public async Task<Result> DeleteSensorAsync(Guid sensorId)
+    public async Task<Result> DeleteSensorAsync(Guid sensorId, Guid userId)
     {
         try
         {
-            var sensor = await _context.Sensors.FirstOrDefaultAsync(s => s.Id == sensorId);
+            var sensor = await _context.Sensors.FirstOrDefaultAsync(s => s.Id == sensorId && s.UserId == userId);
 
             if (sensor == null)
             {
@@ -128,7 +131,8 @@ public class SensorServices : ISensorServices
             }
 
             _context.Remove(sensor);
-
+            await _context.SaveChangesAsync();
+            
             return Result.Success(
                 message: "Sensor deleted",
                 statusCode: StatusCodes.Status200OK
@@ -145,6 +149,40 @@ public class SensorServices : ISensorServices
         }
     }
     
+    public async Task<Result<IEnumerable<GetSensorListResponse>>> GetSensorListAsync(Guid userId)
+    {
+        try
+        {
+            var sensors = await _context.Sensors
+                .AsNoTracking()
+                .Where(s => s.UserId == userId)
+                .Select(s => new GetSensorListResponse
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Location = s.Location,
+                    Type = s.Type.ToString(),
+                    MacAddress = s.MacAddress,
+                    IsActive = s.IsActive,
+                    LastPingAt = s.LastPingAt,
+                }).ToListAsync();
+
+            return Result<IEnumerable<GetSensorListResponse>>.Success(
+                data: sensors,
+                message: "Sensors retrieved successfully",
+                statusCode: StatusCodes.Status200OK
+            );
+        }
+        catch (Exception ex)
+        {
+            return Result<IEnumerable<GetSensorListResponse>>.Failure(
+                message: "An error occurred while retrieving sensors",
+                errorCode: ErrorCodes.InternalError,
+                statusCode: StatusCodes.Status500InternalServerError,
+                errors: new List<string> {ex.Message}
+            );
+        }
+    }
     private static SensorTypeEnum GetType(int sensorType)
     {
         return sensorType switch
