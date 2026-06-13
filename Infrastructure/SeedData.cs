@@ -1,3 +1,4 @@
+using Domain.Enums;
 using Domain.Models;
 
 namespace Infrastructure;
@@ -13,9 +14,10 @@ public static class SeedData
             Name = "Test ESP with BME280",
             Location = "Obok mnie",
             MacAddress = "68:25:DD:21:3D:B8",
-            Topic = "sensors/68:25:DD:21:3D:B8/weather",
+            Topic = "sensors/68:25:DD:21:3D:B8/",
             IsActive = true,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Type = SensorTypeEnum.WeatherStation
         };
         
         context.Sensors.Add(esp);

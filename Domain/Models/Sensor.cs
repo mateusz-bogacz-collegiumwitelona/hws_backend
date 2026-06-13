@@ -1,8 +1,11 @@
+using Domain.Enums;
+
 namespace Domain.Models;
 
 public class Sensor
 {
     public Guid Id { get; set; } = Guid.NewGuid();
+    public SensorTypeEnum Type { get; set; }
     public required string Name { get; set; }
     public required string Location { get; set; }
     public required string Topic { get; set; }

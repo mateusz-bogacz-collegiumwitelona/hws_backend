@@ -38,5 +38,9 @@ public class AppDbContext : DbContext
         
         modelBuilder.Entity<Measurement>()
             .HasQueryFilter(m => m.Sensor!.DeletedAt == null);
+
+        modelBuilder.Entity<Sensor>()
+            .Property(s => s.Type)
+            .HasConversion<string>();
     }
 }
