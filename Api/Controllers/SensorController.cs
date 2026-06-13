@@ -46,4 +46,18 @@ public class SensorController : BaseController
         return HandleResult(result);
     }
     
+    [EndpointSummary("Delete sensor")]
+    [EndpointDescription("This make exacly what is in title")]
+    [ProducesResponseType(typeof(Result<GetSensorMesurmentResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status500InternalServerError)]
+    [HttpDelete("/delete")]
+    public async Task<IActionResult> DeleteSensorAsync([FromRoute]Guid sensorId)
+    {
+        var  result = await _sensorServices.DeleteSensorAsync(sensorId);
+        return HandleResult(result);
+    }
+    
 }

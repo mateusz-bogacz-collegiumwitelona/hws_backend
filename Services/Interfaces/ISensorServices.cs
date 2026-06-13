@@ -8,4 +8,5 @@ public interface ISensorServices
 {
     Task<Result<GetSensorMesurmentResponse>> GetSensorNewestMesureAsync(Guid sensorId);
     Task<Result> AddNewSenorAsync(AddNewSensorRequest request);
+    Task<Result> DeleteSensorAsync(Guid sensorId);
 }

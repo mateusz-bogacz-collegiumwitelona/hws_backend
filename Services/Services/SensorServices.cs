@@ -112,6 +112,39 @@ public class SensorServices : ISensorServices
         }
     }
 
+    public async Task<Result> DeleteSensorAsync(Guid sensorId)
+    {
+        try
+        {
+            var sensor = await _context.Sensors.FirstOrDefaultAsync(s => s.Id == sensorId);
+
+            if (sensor == null)
+            {
+                return Result.Failure(
+                    message: "Sensor not found",
+                    statusCode: StatusCodes.Status404NotFound,
+                    errorCode: ErrorCodes.SensorNotFound
+                );
+            }
+
+            _context.Remove(sensor);
+
+            return Result.Success(
+                message: "Sensor deleted",
+                statusCode: StatusCodes.Status200OK
+            );
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(
+                "An error occurred while remove sensor",
+                ErrorCodes.InternalError,
+                StatusCodes.Status500InternalServerError,
+                new List<string> { ex.Message }
+            );
+        }
+    }
+    
     private static SensorTypeEnum GetType(int sensorType)
     {
         return sensorType switch
