@@ -119,4 +119,18 @@ public class SensorController : AuthControllerBase
         var response = await _sensorServices.EditSensorAsync(CurrentUserId, request);
         return HandleResult(response);
     }
+    
+    [EndpointSummary("Get sensor type list")]
+    [EndpointDescription("Same")]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status500InternalServerError)]
+    [HttpGet("type")]
+    public async Task<IActionResult> GetSensorTypeAsync()
+    {
+        var response = await _sensorServices.GetSensorTypeAsync();
+        return HandleResult(response);
+    }
 }

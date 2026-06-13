@@ -238,6 +238,21 @@ public class SensorServices : ISensorServices
         
         return Result.Success("Edited sensor successfully", StatusCodes.Status200OK);
     }
+
+    public async Task<Result<List<GetSensorTypeRespone>>> GetSensorTypeAsync()
+    {
+        var respone = Enum.GetValues<SensorTypeEnum>()
+            .Select(s => new GetSensorTypeRespone
+            {
+                Name = s.ToString(),
+                Number = (int)s
+            }).ToList();
+
+        return Result<List<GetSensorTypeRespone>>.Success(
+            data: respone,
+            message: "Sensor type list retrieved successfully",
+            statusCode: StatusCodes.Status200OK);
+    }
     
     private static SensorTypeEnum GetType(int sensorType)
     {
