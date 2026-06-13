@@ -10,4 +10,6 @@ public static class ErrorCodes
     // sensors
     public const string SensorNotFound = "SENSOR_01";
     public const string SensorNotHaveData = "SENSOR_02";
+    public const string SensorAlreadyExist = "SENSOR_03";
+    public const string SensorTypeNotFound = "SENSOR_04";
 }

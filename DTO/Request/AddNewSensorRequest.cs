@@ -18,4 +18,6 @@ public record AddNewSensorRequest
     [Length(minimumLength: 3, maximumLength:30, ErrorMessage = "Location name must be between 3 and 30 characters")]
     public string Location { get; init; }
     
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Sensor type is required")]
+    public int Type { get; init; }
 }

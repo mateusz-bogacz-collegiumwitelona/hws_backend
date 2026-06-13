@@ -1,5 +1,7 @@
 using Domain.Common;
 using Domain.Constants;
+using Domain.Enums;
+using Domain.Models;
 using DTO.Request;
 using DTO.Response;
 using Infrastructure;
@@ -54,7 +56,7 @@ public class SensorServices : ISensorServices
             return Result<GetSensorMesurmentResponse>.Success(
                 data: latestMesurments,
                 message: "Sensor data found",
-                statusCode: StatusCodes.Status200OK
+                statusCode: StatusCodes.Status201Created
             );
         }
         catch (Exception ex)
@@ -67,5 +69,64 @@ public class SensorServices : ISensorServices
             );
         }
     }
+
+    public async Task<Result> AddNewSenorAsync(AddNewSensorRequest request)
+    {
+        try
+        {
+            if (await _context.Sensors.AnyAsync(s => s.MacAddress == request.MacAddress))
+            {
+                return Result.Failure(
+                    message: "Sensor with mac address already exists",
+                    statusCode: StatusCodes.Status409Conflict,
+                    errorCode: ErrorCodes.SensorAlreadyExist
+                );
+            }
+            
+            Sensor sensor = new Sensor
+            {
+                Type = GetType(request.Type),
+                Name = request.Name,
+                Location = request.Location,
+                Topic =  GetTopic(GetType(request.Type), request.MacAddress),
+                MacAddress = request.MacAddress,
+            };
+            
+            _context.Sensors.Add(sensor);
+            await _context.SaveChangesAsync();
+            
+            return Result.Success(
+                message: "Sensor added",
+                statusCode: StatusCodes.Status201Created
+                );
+
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(
+                "An error occurred while add sensor",
+                ErrorCodes.InternalError,
+                StatusCodes.Status500InternalServerError,
+                new List<string> { ex.Message }
+            );
+        }
+    }
+
+    private static SensorTypeEnum GetType(int sensorType)
+    {
+        return sensorType switch
+        {
+            1 => SensorTypeEnum.WeatherStation,
+            _ => throw new ArgumentOutOfRangeException(nameof(sensorType), $"Unknown sensor type: {sensorType}")
+        };
+    }
     
+    private static string GetTopic(SensorTypeEnum type, string macAddress)
+    {
+        return type switch
+        {
+            SensorTypeEnum.WeatherStation => $"sensors/{macAddress}/weather",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), $"No topic mapping for sensor type: {type}")
+        };
+    }
 }
