@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Background;
+using Services.Interfaces;
+using Services.Services;
 
 namespace Services;
 
@@ -11,6 +13,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddHostedService<MqttBackgroundService>();
+        services.AddScoped<ISensorServices, SensorServices>();
         
         return services;
     }

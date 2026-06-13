@@ -15,5 +15,4 @@ public record WeatherPayload
     
     [JsonPropertyName("humidity")]
     public required float Humidity { get; init; }
-    
 }

@@ -1,3 +1,5 @@
+using Api.Config;
+using Api.Middleware;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Services;
@@ -6,14 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+// services 
+builder.Services.AddSwaggerConfiguration();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddServices(builder.Configuration);
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
 
 using (var scope = app.Services.CreateScope())
 {
@@ -25,13 +28,8 @@ using (var scope = app.Services.CreateScope())
     if (isSeederActie) SeedData.Seed(dbContext);
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
+app.UseSwaggerUIConfiguration();
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
-
-
+app.MapControllers();
 app.Run();
