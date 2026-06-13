@@ -142,3 +142,5 @@
 /home/mateusz/projects/esp_home/Api/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /home/mateusz/projects/esp_home/Api/bin/Debug/net10.0/Microsoft.IdentityModel.Tokens.dll
 /home/mateusz/projects/esp_home/Api/bin/Debug/net10.0/System.IdentityModel.Tokens.Jwt.dll
+/home/mateusz/projects/esp_home/Api/bin/Debug/net10.0/Command.dll
+/home/mateusz/projects/esp_home/Api/bin/Debug/net10.0/Command.pdb

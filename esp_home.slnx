@@ -3,6 +3,7 @@
     <File Path="compose.yaml" />
   </Folder>
   <Project Path="Api/Api.csproj" />
+  <Project Path="Command/Command.csproj" />
   <Project Path="Domain/Domain.csproj" />
   <Project Path="DTO/DTO.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj" />

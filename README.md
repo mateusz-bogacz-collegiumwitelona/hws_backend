@@ -8,3 +8,6 @@ pamiętać że hasło podane w komedzie ma się zgadzać z tym w .env
 
 linux is stoopid
 ~/.dotnet/tools/dotnet-ef migrations add InitialCreate --project Infrastructure --startup-project Api
+
+dodanie usera
+docker exec -it nazwa_kontenera_api dotnet Api.dll create-user // docker compose run --rm -it nazwa_serwisu_api dotnet Api.dll create-user

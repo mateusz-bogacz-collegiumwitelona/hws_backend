@@ -2,6 +2,7 @@ using Api.Config;
 using Api.Middleware;
 using Domain.Models;
 using Infrastructure;
+using Infrastructure.Cli;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Services;
@@ -33,6 +34,10 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+bool isCliCommandHandled = await CreateUserCommand.HandleCommandAsync(args, app.Services);
+
+if (isCliCommandHandled) return;
 
 
 using (var scope = app.Services.CreateScope())

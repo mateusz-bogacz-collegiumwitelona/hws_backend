@@ -7,6 +7,7 @@ using DTO.Response;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Services.Helpers;
 using Services.Interfaces;
 
 namespace Services.Services;
@@ -183,6 +184,49 @@ public class SensorServices : ISensorServices
             );
         }
     }
+
+    public async Task<Result<PagedResult<GetMesurmentsResponse>>> GetSensorAllMesurments(
+        Guid userId, 
+        Guid sensorId, 
+        PagedRequest paged
+    )
+    {
+        try
+        {
+            if (!await _context.Sensors.AnyAsync(s => s.Id == sensorId && s.UserId == userId))
+            {
+                return Result<PagedResult<GetMesurmentsResponse>>.Failure(
+                    message: "Sensor not found",
+                    statusCode: StatusCodes.Status404NotFound,
+                    errorCode: ErrorCodes.SensorNotFound
+                );
+            }
+
+            var queryTask = _context.Measurements
+                .AsNoTracking()
+                .Where(s => s.SensorId == sensorId)
+                .OrderByDescending(m => m.Timestamp)
+                .Select(m => new GetMesurmentsResponse
+                {
+                    Temperature = m.Temperature,
+                    Humidity = m.Humidity,
+                    Pressure = m.Pressure,
+                    Timestamp = m.Timestamp,
+                }).ToListAsync(); 
+
+            return await queryTask.ToPagedResultAsync(paged);
+        }
+        catch (Exception ex)
+        {
+            return Result<PagedResult<GetMesurmentsResponse>>.Failure(
+                message: "An error occurred while retrieving measurements",
+                errorCode: ErrorCodes.InternalError,
+                statusCode: StatusCodes.Status500InternalServerError,
+                errors: new List<string> { ex.Message }
+            );
+        }
+    }
+    
     private static SensorTypeEnum GetType(int sensorType)
     {
         return sensorType switch

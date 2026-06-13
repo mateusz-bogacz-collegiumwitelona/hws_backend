@@ -75,4 +75,27 @@ public class SensorController : AuthControllerBase
         return HandleResult(result);
     }
     
+    
+    [EndpointSummary("Get paginated sensor measurements")]
+    [EndpointDescription("Returns a paginated list of measurements for a specific sensor.")]
+    [ProducesResponseType(typeof(Result<GetSensorMesurmentResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result<object>), StatusCodes.Status500InternalServerError)]
+    [HttpGet("measurments/{sensorId}")]
+    public async Task<IActionResult> GetSensorAllMesurments(
+        [FromRoute] Guid sensorId,
+        [FromQuery] PagedRequest paged
+    )
+    {
+        var result = await _sensorServices.GetSensorAllMesurments(
+            CurrentUserId,
+            sensorId,
+            paged
+        );
+        
+        return HandleResult(result);
+    }
+    
 }

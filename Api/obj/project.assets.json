@@ -874,6 +874,19 @@
           }
         }
       },
+      "Command/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Command.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Command.dll": {}
+        }
+      },
       "Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
@@ -2770,6 +2783,11 @@
         "system.identitymodel.tokens.jwt.nuspec"
       ]
     },
+    "Command/1.0.0": {
+      "type": "project",
+      "path": "../Command/Command.csproj",
+      "msbuildProject": "../Command/Command.csproj"
+    },
     "Domain/1.0.0": {
       "type": "project",
       "path": "../Domain/Domain.csproj",
@@ -2793,6 +2811,7 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "Command >= 1.0.0",
       "Infrastructure >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 10.0.9",
       "Microsoft.AspNetCore.OpenApi >= 10.0.7",
@@ -2826,6 +2845,9 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
+            "/home/mateusz/projects/esp_home/Command/Command.csproj": {
+              "projectPath": "/home/mateusz/projects/esp_home/Command/Command.csproj"
+            },
             "/home/mateusz/projects/esp_home/Infrastructure/Infrastructure.csproj": {
               "projectPath": "/home/mateusz/projects/esp_home/Infrastructure/Infrastructure.csproj"
             },
