@@ -17,6 +17,7 @@ services:
       - ConnectionStrings__DefaultConnection=User ID=${DB_USER};Password=${DB_PASSWORD};Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_HTTP_PORTS=8080
+      - ISSEEDERACTIVE=${ASPNETCORE_IS_SEEDER_ACTIVE:-false}
       - JWT__KEY=${ASPNETCORE_JWT_KEY}
       - JWT__ISSUER=${ASPNETCORE_JWT_ISSUER}
       - JWT__AUDIENCE=${ASPNETCORE_JWT_AUDIENCE}

@@ -35,5 +35,8 @@ public class AppDbContext : DbContext
                 m.SensorId,
                 m.Timestamp
             });
+        
+        modelBuilder.Entity<Measurement>()
+            .HasQueryFilter(m => m.Sensor!.DeletedAt == null);
     }
 }
