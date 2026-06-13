@@ -23,166 +23,111 @@ public class SensorServices : ISensorServices
 
     public async Task<Result<GetSensorMesurmentResponse>> GetSensorNewestMesureAsync(Guid sensorId, Guid userId)
     {
-        try
-        {
-            if (!await _context.Sensors.AnyAsync(s => s.Id == sensorId))
-                return Result<GetSensorMesurmentResponse>.Failure(
-                    message: "Sensor not found",
-                    statusCode: StatusCodes.Status404NotFound,
-                    errorCode: ErrorCodes.SensorNotFound
-                );
-
-            var latestMesurments = await _context.Measurements
-                .AsNoTracking()
-                .Include(m => m.Sensor)
-                .Where(m => m.SensorId == sensorId)
-                .Where(m => m.Sensor.UserId ==  userId)
-                .OrderByDescending(m => m.Timestamp)
-                .Select(m => new GetSensorMesurmentResponse
-                {
-                    Temperature = m.Temperature,
-                    Humidity = m.Humidity,
-                    Pressure = m.Pressure,
-                    Timestamp = m.Timestamp
-                })
-                .FirstOrDefaultAsync();
-
-            if (latestMesurments == null)
-            {
-                return Result<GetSensorMesurmentResponse>.Failure(
-                    message: "Sensor not have data",
-                    statusCode: StatusCodes.Status404NotFound,
-                    errorCode: ErrorCodes.SensorNotHaveData
-                );
-            }
-
-            return Result<GetSensorMesurmentResponse>.Success(
-                data: latestMesurments,
-                message: "Sensor data found",
-                statusCode: StatusCodes.Status200OK
-            );
-        }
-        catch (Exception ex)
+        if (!await _context.Sensors.AnyAsync(s => s.Id == sensorId && s.UserId == userId))
         {
             return Result<GetSensorMesurmentResponse>.Failure(
-                "An error occurred while get sensor data",
-                ErrorCodes.InternalError,
-                StatusCodes.Status500InternalServerError,
-                new List<string> { ex.Message }
+                message: "Sensor not found or access denied",
+                statusCode: StatusCodes.Status404NotFound,
+                errorCode: ErrorCodes.SensorNotFound
             );
         }
+
+        var latestMesurments = await _context.Measurements
+            .AsNoTracking()
+            .Where(m => m.SensorId == sensorId)
+            .OrderByDescending(m => m.Timestamp)
+            .Select(m => new GetSensorMesurmentResponse
+            {
+                Temperature = m.Temperature,
+                Humidity = m.Humidity,
+                Pressure = m.Pressure,
+                Timestamp = m.Timestamp
+            })
+            .FirstOrDefaultAsync();
+
+        if (latestMesurments == null)
+        {
+            return Result<GetSensorMesurmentResponse>.Failure(
+                message: "Sensor does not have data",
+                statusCode: StatusCodes.Status404NotFound,
+                errorCode: ErrorCodes.SensorNotHaveData
+            );
+        }
+
+        return Result<GetSensorMesurmentResponse>.Success(
+            data: latestMesurments,
+            message: "Sensor data found",
+            statusCode: StatusCodes.Status200OK
+        );
     }
 
     public async Task<Result> AddNewSenorAsync(AddNewSensorRequest request, Guid userId)
     {
-        try
-        {
-            if (await _context.Sensors.AnyAsync(s => s.MacAddress == request.MacAddress))
-            {
-                return Result.Failure(
-                    message: "Sensor with mac address already exists",
-                    statusCode: StatusCodes.Status409Conflict,
-                    errorCode: ErrorCodes.SensorAlreadyExist
-                );
-            }
-            
-            Sensor sensor = new Sensor
-            {
-                Type = GetType(request.Type),
-                Name = request.Name,
-                Location = request.Location,
-                Topic =  GetTopic(GetType(request.Type), request.MacAddress),
-                MacAddress = request.MacAddress,
-                UserId = userId
-            };
-            
-            _context.Sensors.Add(sensor);
-            await _context.SaveChangesAsync();
-            
-            return Result.Success(
-                message: "Sensor added",
-                statusCode: StatusCodes.Status201Created
-                );
-
-        }
-        catch (Exception ex)
+        if (await _context.Sensors.AnyAsync(s => s.MacAddress == request.MacAddress))
         {
             return Result.Failure(
-                "An error occurred while add sensor",
-                ErrorCodes.InternalError,
-                StatusCodes.Status500InternalServerError,
-                new List<string> { ex.Message }
+                message: "Sensor with this MAC address already exists",
+                statusCode: StatusCodes.Status409Conflict,
+                errorCode: ErrorCodes.SensorAlreadyExist
             );
         }
+        
+        Sensor sensor = new Sensor
+        {
+            Type = GetType(request.Type),
+            Name = request.Name,
+            Location = request.Location,
+            Topic = GetTopic(GetType(request.Type), request.MacAddress),
+            MacAddress = request.MacAddress,
+            UserId = userId
+        };
+        
+        _context.Sensors.Add(sensor);
+        await _context.SaveChangesAsync();
+        
+        return Result.Success("Sensor added", StatusCodes.Status201Created);
     }
 
     public async Task<Result> DeleteSensorAsync(Guid sensorId, Guid userId)
     {
-        try
-        {
-            var sensor = await _context.Sensors.FirstOrDefaultAsync(s => s.Id == sensorId && s.UserId == userId);
+        var sensor = await _context.Sensors.FirstOrDefaultAsync(s => s.Id == sensorId && s.UserId == userId);
 
-            if (sensor == null)
-            {
-                return Result.Failure(
-                    message: "Sensor not found",
-                    statusCode: StatusCodes.Status404NotFound,
-                    errorCode: ErrorCodes.SensorNotFound
-                );
-            }
-
-            _context.Remove(sensor);
-            await _context.SaveChangesAsync();
-            
-            return Result.Success(
-                message: "Sensor deleted",
-                statusCode: StatusCodes.Status200OK
-            );
-        }
-        catch (Exception ex)
+        if (sensor == null)
         {
             return Result.Failure(
-                "An error occurred while remove sensor",
-                ErrorCodes.InternalError,
-                StatusCodes.Status500InternalServerError,
-                new List<string> { ex.Message }
+                message: "Sensor not found or access denied",
+                statusCode: StatusCodes.Status404NotFound,
+                errorCode: ErrorCodes.SensorNotFound
             );
         }
+
+        _context.Remove(sensor);
+        await _context.SaveChangesAsync();
+        
+        return Result.Success("Sensor deleted", StatusCodes.Status200OK);
     }
     
     public async Task<Result<IEnumerable<GetSensorListResponse>>> GetSensorListAsync(Guid userId)
     {
-        try
-        {
-            var sensors = await _context.Sensors
-                .AsNoTracking()
-                .Where(s => s.UserId == userId)
-                .Select(s => new GetSensorListResponse
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Location = s.Location,
-                    Type = s.Type.ToString(),
-                    MacAddress = s.MacAddress,
-                    IsActive = s.IsActive,
-                    LastPingAt = s.LastPingAt,
-                }).ToListAsync();
+        var sensors = await _context.Sensors
+            .AsNoTracking()
+            .Where(s => s.UserId == userId)
+            .Select(s => new GetSensorListResponse
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Location = s.Location,
+                Type = s.Type.ToString(),
+                MacAddress = s.MacAddress,
+                IsActive = s.IsActive,
+                LastPingAt = s.LastPingAt,
+            }).ToListAsync();
 
-            return Result<IEnumerable<GetSensorListResponse>>.Success(
-                data: sensors,
-                message: "Sensors retrieved successfully",
-                statusCode: StatusCodes.Status200OK
-            );
-        }
-        catch (Exception ex)
-        {
-            return Result<IEnumerable<GetSensorListResponse>>.Failure(
-                message: "An error occurred while retrieving sensors",
-                errorCode: ErrorCodes.InternalError,
-                statusCode: StatusCodes.Status500InternalServerError,
-                errors: new List<string> {ex.Message}
-            );
-        }
+        return Result<IEnumerable<GetSensorListResponse>>.Success(
+            data: sensors,
+            message: "Sensors retrieved successfully",
+            statusCode: StatusCodes.Status200OK
+        );
     }
 
     public async Task<Result<PagedResult<GetMesurmentsResponse>>> GetSensorAllMesurments(
@@ -191,40 +136,107 @@ public class SensorServices : ISensorServices
         PagedRequest paged
     )
     {
-        try
-        {
-            if (!await _context.Sensors.AnyAsync(s => s.Id == sensorId && s.UserId == userId))
-            {
-                return Result<PagedResult<GetMesurmentsResponse>>.Failure(
-                    message: "Sensor not found",
-                    statusCode: StatusCodes.Status404NotFound,
-                    errorCode: ErrorCodes.SensorNotFound
-                );
-            }
-
-            var queryTask = _context.Measurements
-                .AsNoTracking()
-                .Where(s => s.SensorId == sensorId)
-                .OrderByDescending(m => m.Timestamp)
-                .Select(m => new GetMesurmentsResponse
-                {
-                    Temperature = m.Temperature,
-                    Humidity = m.Humidity,
-                    Pressure = m.Pressure,
-                    Timestamp = m.Timestamp,
-                }).ToListAsync(); 
-
-            return await queryTask.ToPagedResultAsync(paged);
-        }
-        catch (Exception ex)
+        if (!await _context.Sensors.AnyAsync(s => s.Id == sensorId && s.UserId == userId))
         {
             return Result<PagedResult<GetMesurmentsResponse>>.Failure(
-                message: "An error occurred while retrieving measurements",
-                errorCode: ErrorCodes.InternalError,
-                statusCode: StatusCodes.Status500InternalServerError,
-                errors: new List<string> { ex.Message }
+                message: "Sensor not found",
+                statusCode: StatusCodes.Status404NotFound,
+                errorCode: ErrorCodes.SensorNotFound
             );
         }
+
+        var queryTask = _context.Measurements
+            .AsNoTracking()
+            .Where(s => s.SensorId == sensorId)
+            .OrderByDescending(m => m.Timestamp)
+            .Select(m => new GetMesurmentsResponse
+            {
+                Temperature = m.Temperature,
+                Humidity = m.Humidity,
+                Pressure = m.Pressure,
+                Timestamp = m.Timestamp,
+            }).ToListAsync(); 
+
+        return await queryTask.ToPagedResultAsync(paged);
+    }
+
+    public async Task<Result<GetMesurmentsResponse>> GetSensorAveragesMesurments(Guid userId, Guid sensorId)
+    {
+        if (!await _context.Sensors.AnyAsync(s => s.Id == sensorId && s.UserId == userId))
+        {
+            return Result<GetMesurmentsResponse>.Failure(
+                message: "Sensor not found",
+                statusCode: StatusCodes.Status404NotFound,
+                errorCode: ErrorCodes.SensorNotFound
+            );
+        }
+
+        var response = await _context.Measurements
+            .AsNoTracking()
+            .Where(s => s.SensorId == sensorId)
+            .GroupBy(m => 1)
+            .Select(g => new GetMesurmentsResponse
+            {
+                Temperature = (float)Math.Round(g.Average(m => m.Temperature), 2),
+                Humidity = (float)Math.Round(g.Average(m => m.Humidity), 2),
+                Pressure = (float)Math.Round(g.Average(m => m.Pressure), 2),
+                Timestamp = DateTime.UtcNow
+            }).FirstOrDefaultAsync();
+
+        if (response == null)
+        {
+            return Result<GetMesurmentsResponse>.Failure(
+                message: "Not enough data to calculate averages",
+                statusCode: StatusCodes.Status404NotFound,
+                errorCode: ErrorCodes.SensorNotFound
+            );
+        }
+
+        return Result<GetMesurmentsResponse>.Success(
+            data: response,
+            message: "Averages calculated successfully",
+            statusCode: StatusCodes.Status200OK
+        );
+    }
+
+    public async Task<Result> EditSensorAsync(Guid userId, EditSensorRequest request)
+    {
+        Sensor sensor = await _context.Sensors.FirstOrDefaultAsync(s => s.Id == request.SensorId && s.UserId == userId);
+
+        if (sensor == null)
+        {
+            return Result.Failure(
+                message: "Sensor not found or access denied",
+                statusCode: StatusCodes.Status404NotFound,
+                errorCode: ErrorCodes.SensorNotFound
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            sensor.Name = request.Name;
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Location))
+        {
+            sensor.Location = request.Location;
+        }
+
+        if (request.IsActive.HasValue)
+        {
+            sensor.IsActive = request.IsActive.Value;
+        }
+
+        if (request.Type.HasValue)
+        {
+            int type = (int)request.Type;
+            sensor.Type = GetType(type);
+        }
+
+        _context.Sensors.Update(sensor);
+        await _context.SaveChangesAsync();
+        
+        return Result.Success("Edited sensor successfully", StatusCodes.Status200OK);
     }
     
     private static SensorTypeEnum GetType(int sensorType)

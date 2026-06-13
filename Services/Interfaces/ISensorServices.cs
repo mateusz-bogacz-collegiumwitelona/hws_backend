@@ -13,4 +13,6 @@ public interface ISensorServices
     Task<Result<IEnumerable<GetSensorListResponse>>> GetSensorListAsync(Guid userId);
 
     Task<Result<PagedResult<GetMesurmentsResponse>>> GetSensorAllMesurments(Guid userId, Guid sensorId, PagedRequest paged);
+    Task<Result<GetMesurmentsResponse>> GetSensorAveragesMesurments(Guid userId, Guid sensorId);
+    Task<Result> EditSensorAsync(Guid userId, EditSensorRequest request);
 }
